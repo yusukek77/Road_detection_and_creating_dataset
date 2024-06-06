@@ -3,10 +3,11 @@ These scripts are described in the paper, "Importance of road detection for eval
 in Brazilian Amazon using satellite imagery"(Japanese),presented in The 76th Conference (2024 Spring Conference) of the Remote Sensing Society of Japan.
 
 ### \<Overview\>
-Creating dataset outputs a csv format that the total area of deforestation, or deforestation or not of DETER(http://www.obt.inpe.br/OBT/assuntos/programas/amazonia/deter/deter) for each 1 km mesh of the target area per month within a period of data, by inputting the north-south latitude and east-west longitude of the target area and the DETER shapefile.
+This repository introduces codes for two tasks, 1: generating a list of deforestation areas (or no area) from DETER, and 2: detecting roads in Amazonian forests based on Sat2Graph.
 
+1.  In the first task, csv files as an output will contain "total area of deforestation" and "binary of deforestation"(deforestation:1, non-deforestation: 0) in every 1 x 1 km mesh in a target area and during a target period. Deforestation area is evaluated from DETER(http://www.obt.inpe.br/OBT/assuntos/programas/amazonia/deter/deter), and the target region can be specified simply by inputting the north-south latitude and east-west longitude of the target area, and then codes will extract the target region from the DETER shapefile.
 
-Modified Sat2Graph codes to use NICFI Planet data and to add location information. Sat2Graph is one of the road detection method using deep learning. Original Sat2Graph codes are https://github.com/songtaohe/Sat2Graph by Dr. He. Using these scripts, downloading Planet nicfi data, training, detecting road and postprocessing.
+2. In the second task, modified Sat2Graph codes will be applied to NICFI Planet data, and then add location information. Sat2Graph is one of the road detection method using deep learning. Original Sat2Graph codes are https://github.com/songtaohe/Sat2Graph by Dr. He. Using these scripts, downloading Planet nicfi data, training, detecting road and postprocessing.<br>
 
 <img src="outputs/false_color.png" width="320px"> <img src="outputs/road_detection.png" width="320px"><br/>
          Left: Planet NICFI imagery Right: Road detection</br>
