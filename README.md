@@ -9,7 +9,8 @@ Creating dataset outputs a csv format that the total area of deforestation, or d
 Modified Sat2Graph codes to use NICFI Planet data and to add location information. Sat2Graph is one of the road detection method using deep learning. Original Sat2Graph codes are https://github.com/songtaohe/Sat2Graph by Dr. He. Using these scripts, downloading Planet nicfi data, training, detecting road and postprocessing.
 
 <img src="outputs/false_color.png" width="320px"> <img src="outputs/road_detection.png" width="320px"><br/>
-<small>This satellite imagery was used under the NICFI Satellite Data Program.</small>
+         Left: Planet NICFI imagery Right: Road detection</br>
+This satellite imagery was used under the NICFI Satellite Data Program.
 
 ### \<Environments\>
 To execute creating dataset code,the following modules must be installed in an environment.<br/>
