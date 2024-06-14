@@ -134,10 +134,10 @@ gdf_polygon_area_UTM = gdf_polygon_area.to_crs(crs)
 
 #calculate minx,miny, maxx and maxy
 gdf_polygon_area_UTM_bounds = gdf_polygon_area_UTM.bounds
-minx = math.ceil(gdf_polygon_area_UTM_bounds.loc[0, "minx"] / resolution) * 1000
-miny = math.ceil(gdf_polygon_area_UTM_bounds.loc[0, "miny"] / resolution) * 1000
-maxx = math.floor(gdf_polygon_area_UTM_bounds.loc[0, "maxx"] / resolution) * 1000
-maxy = math.floor(gdf_polygon_area_UTM_bounds.loc[0, "maxy"] / resolution) * 1000
+minx = math.ceil(gdf_polygon_area_UTM_bounds.loc[0, "minx"] / resolution) * resolution
+miny = math.ceil(gdf_polygon_area_UTM_bounds.loc[0, "miny"] / resolution) * resolution
+maxx = math.floor(gdf_polygon_area_UTM_bounds.loc[0, "maxx"] / resolution) * resolution
+maxy = math.floor(gdf_polygon_area_UTM_bounds.loc[0, "maxy"] / resolution) * resolution
 
 #create the list of the cols and rows
 cols = list(np.arange(minx, maxx + resolution, resolution))
@@ -172,7 +172,6 @@ os.makedirs(os.path.join(polygon_folder_dir, str(ID)), exist_ok=True)
 #gdf_polygon_area_UTM.to_file(driver='GeoJSON', filename=main_dir  + "/polygon/" + str(ID) +"_target.geojson")
 #export grid polygon geojson file to main directry
 gdf_grid_polygon_target_area.to_file(driver='GeoJSON', filename=os.path.join(polygon_folder_dir, str(ID), "1km_mesh.geojson"))
-
 
 #read DETER polygon
 gdf_deter_polygon = gpd.read_file(os.path.join(main_dir, "deter-amz-deter-public.shp"), encoding='UTF-8').explode(ignore_index=True)
