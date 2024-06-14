@@ -199,7 +199,7 @@ startyear = gdf_deforestation_clip['VIEW_DATE'].min().year
 startmonth = gdf_deforestation_clip['VIEW_DATE'].min().month
 endyear = gdf_deforestation_clip['VIEW_DATE'].max().year
 endmonth = gdf_deforestation_clip['VIEW_DATE'].max().month
-year_range = endyear - startyear
+year_range = endyear - startyear + 1
 
 #set UTM coordinate system
 gdf_deforestation_clip = gdf_deforestation_clip.to_crs(crs)
