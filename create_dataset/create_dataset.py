@@ -123,7 +123,7 @@ elif average >= -42 and average <= -36:
       #UTM 24S
     crs = "EPSG:32724"
 elif average >= -36 and average <= -30:
-      #UTM 25S
+      #UTM 25sS
     crs = "EPSG:32725"
 else:
     print("ERROR! out of range or cross the boundary")
@@ -175,7 +175,7 @@ gdf_grid_polygon_target_area.to_file(driver='GeoJSON', filename=os.path.join(pol
 
 
 #read DETER polygon
-gdf_deter_polygon = gpd.read_file("deter-amz-deter-public.shp", encoding='UTF-8').explode(ignore_index=True)
+gdf_deter_polygon = gpd.read_file(os.path.join(main_dir, "deter-amz-deter-public.shp"), encoding='UTF-8').explode(ignore_index=True)
 
 #convert CRS
 gdf_target_polygon = gdf_polygon_area_UTM.to_crs("EPSG:4674")
