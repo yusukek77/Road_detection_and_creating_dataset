@@ -14,7 +14,8 @@ warnings.simplefilter(action='ignore', category=FutureWarning)
 ##########
 #input ID
 #"Porto Velho" is 1, "Humaita" is 2, "Altamira" is 3, "Vista Alegre do Abuna" is 4, "Novo Progresso" is 5, 
-#"Sao_Felix_do_Xingu" is 6, "S6W57" is 7,and "S7W57" is 8. If adding other area, please put the number in order from 9.
+#"Sao_Felix_do_Xingu" is 6, "S6W57" is 7,and "S7W57" is 8, If adding other area, please put the number in order from 9.
+
 ID = 1
 
 #Input latitude of north and south, and longitude of east and west of the target area.
@@ -72,6 +73,13 @@ west = -57
 east = -56
 north = -7
 south = -8
+
+#vitoria_do_xingu (ID:9)
+west = -53
+east = -52
+north = -2
+south = -3
+
 '''
 
 #set main directory
@@ -169,7 +177,7 @@ gdf_grid_polygon_target_area['ID'] = range(ID*1000000 + 1, ID*1000000 + len(gdf_
 os.makedirs(os.path.join(polygon_folder_dir, str(ID)), exist_ok=True)
 
 #export target polygon geojson file to main directry
-#gdf_polygon_area_UTM.to_file(driver='GeoJSON', filename=main_dir  + "/polygon/" + str(ID) +"_target.geojson")
+#gdf_polygon_area_UTM.to_file(driver='GeoJSON', filename=os.path.join(polygon_folder_dir, str(ID)+ "_target.geojson"))
 #export grid polygon geojson file to main directry
 gdf_grid_polygon_target_area.to_file(driver='GeoJSON', filename=os.path.join(polygon_folder_dir, str(ID), "1km_mesh.geojson"))
 
@@ -182,8 +190,8 @@ gdf_target_polygon = gdf_polygon_area_UTM.to_crs("EPSG:4674")
 #extract deforestation polygon
 gdf_deforestation_polygon = gdf_deter_polygon.query('CLASSNAME == ["DESMATAMENTO_CR", "DESMATAMENTO_VEG","MINERACAO"]')
 
-#clip deforestation polygon
-gdf_deforestation_clip = gpd.clip(gdf_deforestation_polygon, gdf_target_polygon)
+gdf_grid_polygon_target_area_latlon = gdf_grid_polygon_target_area.to_crs("EPSG:4674")
+gdf_deforestation_clip = gpd.clip(gdf_deforestation_polygon, gdf_grid_polygon_target_area_latlon)
 
 #set CRS
 gdf_deforestation_clip.crs = "EPSG:4674"  
@@ -199,6 +207,7 @@ startyear = gdf_deforestation_clip['VIEW_DATE'].min().year
 startmonth = gdf_deforestation_clip['VIEW_DATE'].min().month
 endyear = gdf_deforestation_clip['VIEW_DATE'].max().year
 endmonth = gdf_deforestation_clip['VIEW_DATE'].max().month
+
 year_range = endyear - startyear + 1
 
 #set UTM coordinate system
@@ -247,26 +256,33 @@ for i in range(year_range):
 
                     #extract polygon (remove line)
                     gdf_polygon_extract = gdf_polygon_extract[gdf_polygon_extract.geometry.type == 'Polygon']
-                       
-                #intersection mesh and polygon_extract
-                gdf_intersect = gpd.overlay(gdf_grid_polygon,gdf_polygon_extract, how='intersection', keep_geom_type=False).reset_index() 
 
-                #calculate area
-                gdf_intersect['area'] = gdf_intersect['geometry'].area
 
-                #extract column ID and area
-                gdf_intersect_area = gdf_intersect[["ID", "area"]]
+                #if nodata then 0
+                if len(gdf_polygon_extract.index) == 0:
+                    area_date = str(year) + str(month).zfill(2)
+                    gdf_result_output[area_date] = 0
+                else:
+                    #intersection mesh and polygon_extract
+                    gdf_intersect = gpd.overlay(gdf_grid_polygon,gdf_polygon_extract, how='intersection', keep_geom_type=False).reset_index() 
 
-                #sum by mesh id
-                df_intersect_area_sum = gdf_intersect_area.groupby("ID").sum().reset_index()
+                    #calculate area
+                    gdf_intersect['area'] = gdf_intersect['geometry'].area
 
-                #merge mesh polygon and sum area
-                gdf_result = pd.merge(gdf_grid_polygon,df_intersect_area_sum, how='left', on='ID')
+                    #extract column ID and area
+                    gdf_intersect_area = gdf_intersect[["ID", "area"]]
 
-                #NoData to 0
-                gdf_result['area'] = gdf_result['area'].fillna(0) 
-                area_date = str(year) + str(month).zfill(2)
-                gdf_result_output[area_date] = gdf_result['area']
+                    #sum by mesh id
+                    df_intersect_area_sum = gdf_intersect_area.groupby("ID").sum().reset_index()
+
+                    #merge mesh polygon and sum area
+                    gdf_result = pd.merge(gdf_grid_polygon,df_intersect_area_sum, how='left', on='ID')
+
+                    #NoData to 0
+                    gdf_result['area'] = gdf_result['area'].fillna(0) 
+                    area_date = str(year) + str(month).zfill(2)
+                    gdf_result_output[area_date] = gdf_result['area']
+
  
 #export geojson for check
 gdf_result_output.to_file(driver='GeoJSON', filename=os.path.join(polygon_folder_dir, str(ID), "1km_mesh_deforestation_area.geojson"))
@@ -276,7 +292,12 @@ df_result_output = pd.DataFrame(gdf_result_output.drop(columns=[0,'left','top','
 df_result_output.to_csv(os.path.join(data_folder_dir, "feature", str(ID), "deforestation_area.csv"), index=False)
 
 df_result_output2 = df_result_output.set_index('ID')
+
 df_result_output2.where(df_result_output2 == 0,1,inplace=True)
+#If threshold is 1000, use below.
+#df_result_output2.where(df_result_output2 >= 1000,0,inplace=True)
+#df_result_output2.where(df_result_output2 < 1000,1,inplace=True)
+
 df_result_output2.to_csv(os.path.join(data_folder_dir, "feature", str(ID), "deforestation.csv"), index=True)
 
 print("finished!")
