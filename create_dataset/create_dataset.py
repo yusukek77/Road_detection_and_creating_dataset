@@ -74,12 +74,6 @@ east = -56
 north = -7
 south = -8
 
-#vitoria_do_xingu (ID:9)
-west = -53
-east = -52
-north = -2
-south = -3
-
 '''
 
 #set main directory
@@ -227,7 +221,6 @@ for i in range(year_range):
          else:        
             if year == endyear and month == endmonth + 1:
                 break
-            #print(year,month)
 
             if flag0 == 0:
                 gdf_result_output = gdf_grid_polygon.copy()
@@ -293,10 +286,11 @@ df_result_output.to_csv(os.path.join(data_folder_dir, "feature", str(ID), "defor
 
 df_result_output2 = df_result_output.set_index('ID')
 
-df_result_output2.where(df_result_output2 == 0,1,inplace=True)
+#If threshold is greater than 0,use below.
+#df_result_output2.where(df_result_output2 == 0,1,inplace=True)
 #If threshold is 1000, use below.
-#df_result_output2.where(df_result_output2 >= 1000,0,inplace=True)
-#df_result_output2.where(df_result_output2 < 1000,1,inplace=True)
+df_result_output2.where(df_result_output2 >= 1000,0,inplace=True)
+df_result_output2.where(df_result_output2 < 1000,1,inplace=True)
 
 df_result_output2.to_csv(os.path.join(data_folder_dir, "feature", str(ID), "deforestation.csv"), index=True)
 
