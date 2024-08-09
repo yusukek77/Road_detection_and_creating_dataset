@@ -282,6 +282,7 @@ gdf_result_output.to_file(driver='GeoJSON', filename=os.path.join(polygon_folder
 
 #export csv file
 df_result_output = pd.DataFrame(gdf_result_output.drop(columns=[0,'left','top','right','bottom']))
+df_result_output.where(df_result_output >= 1000,0,inplace=True)
 df_result_output.to_csv(os.path.join(data_folder_dir, "feature", str(ID), "deforestation_area.csv"), index=False)
 
 df_result_output2 = df_result_output.set_index('ID')
