@@ -93,9 +93,10 @@ for item in dataset_cfg:
 			zoom = 15
 			print(lat_st, lon_st, lat_ed, lon_ed)
 
-			# create polygon		
+			# create polygon
 			polygon1 = Polygon([(lon_st,lat_st), (lon_st, lat_ed), (lon_ed, lat_ed), (lon_ed, lat_st)])
 			polygondata.loc[0, 'geometry'] = polygon1
+			polygondata  = polygondata.set_geometry('geometry')
 			polygondata.crs = from_epsg(4326)
 			polygondata['lat_st'] = lat_st
 			polygondata['lon_st'] = lon_st
